@@ -14,6 +14,8 @@ Device::Device()
 	gatewayMAC = new char[6];
 	gatewayMACStr = new char[17];
 
+	/* 获取本机设备列表*/
+	if (pcap_findalldevs_ex(PCAP_SRC_IF_STRING, NULL, &alldevs, errbuf) == -1)exit(1);
 }
 
 Device::~Device()
@@ -23,39 +25,17 @@ Device::~Device()
 }
 
 //主线程
-void Device::DeviceGetReady()
+void Device::DeviceGetReady(int option)
 {
-	/* 获取本机设备列表*/
-	if (pcap_findalldevs_ex(PCAP_SRC_IF_STRING, NULL, &alldevs, errbuf) == -1)exit(1);
-
-	//遍历网卡
 	pcap_if_t *d;
-	for (d = alldevs; d; d = d->next)
-	{
-		//首先对判断网卡需要的参数清零
-		ZeroMemory(gateway_ip, 16);
-		ZeroMemory(macStr, 17);
 
-		OpenDevice(d);                                  //打开网卡
-		GetInfo(d);   //获得该网卡的IP、子网掩码、MAC地址和网关IP
-
-		BOOL chk = TRUE;
-		char *invalidGate = new char[];
-		invalidGate = "0.0.0.0";                       //该网关不合法
-		if (this->gateway_ip == NULL)chk = FALSE;
-		if (strcmp(this->gateway_ip, invalidGate) == 0)chk = FALSE;
-
-		if (!chk)
-		{
-			continue;
-		}
-		else break;//已找到合适的网卡
-
-	}
-
+	d = alldevs;
+	for (int i = 0; i < option; i++)d = d->next;// 跳转到指定网卡
+	OpenDevice(d);                                  //打开网卡
+	GetInfo(d);   //获得该网卡的IP、子网掩码、MAC地址和网关IP
 }
 
-//打开设备
+// 打开设备
 int Device::OpenDevice(pcap_if_t *d)
 {
 	if ((adhandle = pcap_open(d->name,          // 设备名
@@ -73,7 +53,7 @@ int Device::OpenDevice(pcap_if_t *d)
 	else return 0;
 }
 
-//获得自己的IP与掩码
+// 获得自己的IP与掩码
 void Device::GetInfo(pcap_if_t *d)
 {
 	pcap_addr_t *a;

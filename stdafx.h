@@ -27,8 +27,7 @@
 #include <WinSock2.h>
 #include <cstring>
 #include "pcap.h"
-#pragma comment(lib,"ws2_32.lib")
-#pragma comment(lib,"wpcap.lib")
+
 #include <commctrl.h>  //Listview
 #include <math.h>
 
