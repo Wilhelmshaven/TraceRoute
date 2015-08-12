@@ -74,6 +74,7 @@ UINT AnalyzePacket(LPVOID lpParameter);                                         
 
 HANDLE sendThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)SendPacket, NULL, 0, NULL);     // 发包线程
 HANDLE recvThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)AnalyzePacket, NULL, 0, NULL);  // 收包线程
+
 /*============================== WinMain ==============================*/
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -112,7 +113,6 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 
 	return (int) msg.wParam;
 }
-
 
 //注册窗口类。
 ATOM MyRegisterClass(HINSTANCE hInstance)
